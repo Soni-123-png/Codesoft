@@ -1,0 +1,48 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+
+const CreateQuiz = () => {
+    const [title, setTitle] = useState('');
+    const [questions, setQuestions] = useState([{ questionText: '', options: ['', '', '', ''], correctAnswer: '' }]);
+
+    const handleAddQuestion = () => {
+        setQuestions([...questions, { questionText: '', options: ['', '', '', ''], correctAnswer: '' }]);
+    };
+
+    const handleSubmit = async () => {
+        const response = await axios.post('/api/quizzes', { title, questions });
+        console.log(response.data);
+    };
+
+    return (
+        <div>
+            <h2>Create a New Quiz</h2>
+            <input type="text" placeholder="Quiz Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+            {questions.map((q, index) => (
+                <div key={index}>
+                    <input type="text" placeholder="Question Text" value={q.questionText} onChange={(e) => {
+                        const newQuestions = [...questions];
+                        newQuestions[index].questionText = e.target.value;
+                        setQuestions(newQuestions);
+                    }} />
+                    {q.options.map((option, optIndex) => (
+                        <input key={optIndex} type="text" placeholder={`Option ${optIndex + 1}`} value={option} onChange={(e) => {
+                            const newQuestions = [...questions];
+                            newQuestions[index].options[optIndex] = e.target.value;
+                            setQuestions(newQuestions);
+                        }} />
+                    ))}
+                    <input type="text" placeholder="Correct Answer" value={q.correctAnswer} onChange={(e) => {
+                        const newQuestions = [...questions];
+                        newQuestions[index].correctAnswer = e.target.value;
+                        setQuestions(newQuestions);
+                    }} />
+                </div>
+            ))}
+            <button onClick={handleAddQuestion}>Add Question</button>
+            <button onClick={handleSubmit}>Submit Quiz</button>
+        </div>
+    );
+};
+
+export default CreateQuiz;
